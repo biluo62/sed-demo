@@ -45,12 +45,13 @@ sed -n '/Paulo/, +2 p' books.txt
 # 保持空间
 
 ## 用途: 在处理模式空间中的数据时，可以使用保持空间来临时保存一些行
-命令           描述
-h             将模式空间的内容复制到保持空间
-H             将模式空间的内容附加到保持空间
-g             将保持空间的内容复制到模式空间
-G             将保持空间的内容附加到模式空间
-x             将模式空间和保持空间中的内容互换
+| 命令         |   描述                      |
+|:------------|:---------------------------|
+| h           |  将模式空间的内容复制到保持空间 |
+| H           |  将模式空间的内容附加到保持空间 |
+| g           |  将保持空间的内容复制到模式空间 |
+| G           |  将保持空间的内容附加到模式空间 |
+| x           |  将模式空间和保持空间中的内容互换 |
 
 sed -n 'h;n;H;x;s/\n/, /;/Paulo/!b Print; s/^/- /; :Print;p' books2.txt
 
@@ -60,7 +61,7 @@ sed -n 'h;n;H;x;s/\n/, /;/Paulo/!b Print; s/^/- /; :Print;p' books2.txt
 
 ## 删除命令(d)
 
-### 格式
+### 语法格式
 [address1 [, address2]] d
 address1和address2分别表示需要删除行数的起始位置和结束位置, 可以是数字行寻址和文本行寻址，都是可选的
 
@@ -82,4 +83,41 @@ sed '/The Alchemist/, /The Pilgrimage/ d' books.txt
 
 注： 如果address2行数在address1之前，那么就删除从address1匹配到行数到文本结束
 
+## 文件写入命令(w)
+
+### 语法格式
+[address1 [, address2]]w file
+address1和address2代表的意思与DELETE命令一致
+
+w - 写命令
+file - 存储文件内容的文件名
+注： 使用file时需要注意，当file不存在是，会创建新的文件；当该文件存在时，会覆盖该文件的内容
+
+### 实例: 复制文件，相当于`cp`操作
+sed -n 'w books.bak' books.txt
+
+使用上述命令会创建一个`books.bak`的副本文件，可以使用下述命令来查看两个文件的不同之处
+
+diff books.bak books.txt
+echo $?
+
+### 复制文件中的某些行
+sed -n '2~2 w junk.txt' books.txt
+
+注： 从第2行开始，每隔一行复制到junk.txt文件中(复制偶数行到junk.txt文件中)
+
+### 存储每位作者的书到单独的文件中
+sed -n -e '/Martin/ w Martin.txt' -e '/Paulo/ w Paulo.txt' -e '/Tolkien/ w Tolkien.txt' books.txt
+sed -n -e '
+/Martin/ w Martin1.txt
+/Paulo/ w Paulo1.txt
+/Tolkien/ w Tolkien1.txt
+' books.txt
+
+## 追加命令(a)
+
+### 语法格式
+[address] a Append text
+
+### 实例：在第4行追加
 
